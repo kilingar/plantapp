@@ -114,12 +114,13 @@ export default function DashboardPage() {
       `)
       .in("zone_id", zoneIds)
       .eq("status", "active")
-      .order("created_at", { ascending: false });
+      .order("created_at", { ascending: false })
+      .returns<Plant[]>();
 
     if (error) {
       console.error("Error loading plants:", error);
     } else if (data) {
-      setPlants(data as Plant[]);
+      setPlants(data);
     }
   };
 
@@ -191,8 +192,9 @@ export default function DashboardPage() {
       console.error("Error creating home:", error);
       alert("Error creating home: " + error.message);
     } else if (data) {
-      setHomes([data, ...homes]);
-      setSelectedHome(data);
+      const h = data as Home;
+      setHomes([h, ...homes]);
+      setSelectedHome(h);
       setShowCreateHome(false);
       setNewHomeName("");
     }

@@ -37,6 +37,7 @@ export interface Database {
           created_at?: string
           updated_at?: string
         }
+        Relationships: []
       }
       invitations: {
         Row: {
@@ -69,6 +70,7 @@ export interface Database {
           created_at?: string
           expires_at?: string
         }
+        Relationships: []
       }
       homes: {
         Row: {
@@ -98,6 +100,7 @@ export interface Database {
           created_at?: string
           updated_at?: string
         }
+        Relationships: []
       }
       home_members: {
         Row: {
@@ -121,6 +124,7 @@ export interface Database {
           role?: 'owner' | 'member'
           created_at?: string
         }
+        Relationships: []
       }
       zones: {
         Row: {
@@ -150,6 +154,7 @@ export interface Database {
           created_at?: string
           updated_at?: string
         }
+        Relationships: []
       }
       plants: {
         Row: {
@@ -194,6 +199,7 @@ export interface Database {
           created_at?: string
           updated_at?: string
         }
+        Relationships: []
       }
       plant_diary_entries: {
         Row: {
@@ -223,6 +229,7 @@ export interface Database {
           image_url?: string | null
           created_at?: string
         }
+        Relationships: []
       }
     }
     Views: {
@@ -232,6 +239,9 @@ export interface Database {
       [_ in never]: never
     }
     Enums: {
+      [_ in never]: never
+    }
+    CompositeTypes: {
       [_ in never]: never
     }
   }

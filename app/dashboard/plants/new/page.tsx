@@ -136,19 +136,19 @@ export default function NewPlantPage() {
     if (image && plantData) {
       // Get home_id from the selected zone
       const zone = zones.find(z => z.id === selectedZoneId);
-      const imageUrl = await uploadPlantImage(image, plantData.id, zone?.home_id);
+      const imageUrl = await uploadPlantImage(image, (plantData as { id: string }).id, zone?.home_id);
       
       if (imageUrl) {
         // Update plant with image URL
         await supabase
           .from("plants")
           .update({ image_url: imageUrl })
-          .eq("id", plantData.id);
+          .eq("id", (plantData as { id: string }).id);
       }
     }
 
     if (plantData) {
-      router.push(`/dashboard/plants/${plantData.id}`);
+      router.push(`/dashboard/plants/${(plantData as { id: string }).id}`);
     }
   };
 

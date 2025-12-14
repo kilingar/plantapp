@@ -42,12 +42,12 @@ export default function InvitePage({
       setError("Invalid or expired invitation");
     } else {
       // Check if invitation is expired
-      if (new Date(data.expires_at) < new Date()) {
+      if (new Date((data as { expires_at?: string }).expires_at as string) < new Date()) {
         setError("This invitation has expired");
         await supabase
           .from("invitations")
           .update({ status: "expired" })
-          .eq("id", data.id);
+          .eq("id", (data as { id: string }).id);
       } else {
         setInvitation(data as any);
       }

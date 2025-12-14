@@ -10,6 +10,8 @@ type Plant = Database["public"]["Tables"]["plants"]["Row"] & {
   zone?: Database["public"]["Tables"]["zones"]["Row"];
 };
 type Home = Database["public"]["Tables"]["homes"]["Row"];
+type ZoneId = Pick<Database["public"]["Tables"]["zones"]["Row"], "id">;
+type DiaryImage = Pick<Database["public"]["Tables"]["plant_diary_entries"]["Row"], "image_url">;
 
 export default function PlantsPage() {
   const [plants, setPlants] = useState<Plant[]>([]);
@@ -54,7 +56,8 @@ export default function PlantsPage() {
     const { data: homeZones, error: zonesError } = await supabase
       .from("zones")
       .select("id")
-      .eq("home_id", selectedHome.id);
+      .eq("home_id", selectedHome.id)
+      .returns<ZoneId[]>();
 
     if (zonesError) {
       console.error("Error loading zones for plants:", zonesError);
@@ -81,12 +84,14 @@ export default function PlantsPage() {
       query = query.eq("status", filterStatus);
     }
 
-    const { data, error } = await query.order("created_at", { ascending: false });
+    const { data, error } = await query
+      .order("created_at", { ascending: false })
+      .returns<Plant[]>();
 
     if (error) {
       console.error("Error loading plants:", error);
     } else if (data) {
-      setPlants(data as Plant[]);
+      setPlants(data);
     }
   };
 
@@ -115,7 +120,8 @@ export default function PlantsPage() {
     const { data: diaryEntries } = await supabase
       .from("plant_diary_entries")
       .select("image_url")
-      .eq("plant_id", plantId);
+      .eq("plant_id", plantId)
+      .returns<DiaryImage[]>();
 
     if (diaryEntries) {
       for (const entry of diaryEntries) {

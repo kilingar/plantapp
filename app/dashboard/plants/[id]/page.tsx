@@ -11,6 +11,7 @@ type Plant = Database["public"]["Tables"]["plants"]["Row"];
 type Zone = Database["public"]["Tables"]["zones"]["Row"];
 type Home = Database["public"]["Tables"]["homes"]["Row"];
 type DiaryEntry = Database["public"]["Tables"]["plant_diary_entries"]["Row"];
+type PlantWithRelations = Plant & { zone: Zone & { home: Home } };
 
 export default function PlantDetailPage({
   params,
@@ -57,19 +58,20 @@ export default function PlantDetailPage({
         )
       `)
       .eq("id", id)
-      .single();
+      .single<PlantWithRelations>();
 
     if (error) {
       console.error("Error loading plant:", error);
     } else if (data) {
-      setPlant(data);
-      const zoneData = data.zone as any;
+      setPlant(data as Plant);
+      const zoneData = data.zone as Zone & { home: Home };
       setZone(zoneData);
       setHome(zoneData?.home as Home);
-      setName(data.name);
-      setSpecies(data.species || "");
-      setDescription(data.description || "");
-      setWateringFrequency(data.watering_frequency_days?.toString() || "");
+      const p = data as Partial<Plant>;
+      setName((p.name as string) || "");
+      setSpecies((p.species as string) || "");
+      setDescription((p.description as string) || "");
+      setWateringFrequency((p.watering_frequency_days as number | undefined)?.toString() || "");
     }
     setLoading(false);
   };
@@ -91,7 +93,9 @@ export default function PlantDetailPage({
   const handleWater = async () => {
     const { error } = await supabase
       .from("plants")
-      .update({ last_watered: new Date().toISOString().split("T")[0] })
+      .update({
+        last_watered: new Date().toISOString().split("T")[0],
+      })
       .eq("id", id);
 
     if (error) {
@@ -100,12 +104,14 @@ export default function PlantDetailPage({
       // Also add diary entry
       const { data: { user } } = await supabase.auth.getUser();
       if (user) {
-        await supabase.from("plant_diary_entries").insert([{
-          plant_id: id,
-          user_id: user.id,
-          entry_type: "watering",
-          notes: "Watered plant",
-        }]);
+        await supabase
+          .from("plant_diary_entries")
+          .insert([{
+            plant_id: id,
+            user_id: user.id,
+            entry_type: "watering",
+            notes: "Watered plant",
+          }]);
       }
       loadPlant();
       loadDiaryEntries();
@@ -223,13 +229,15 @@ export default function PlantDetailPage({
       imageUrl = await uploadPlantImage(diaryImage, plant.id, zone.home_id);
     }
 
-    const { error } = await supabase.from("plant_diary_entries").insert([{
-      plant_id: id,
-      user_id: user.id,
-      entry_type: diaryType,
-      notes: diaryNotes,
-      image_url: imageUrl,
-    }]);
+    const { error } = await supabase
+      .from("plant_diary_entries")
+      .insert([{
+        plant_id: id,
+        user_id: user.id,
+        entry_type: diaryType,
+        notes: diaryNotes,
+        image_url: imageUrl,
+      }]);
 
     if (error) {
       alert("Error adding diary entry: " + error.message);

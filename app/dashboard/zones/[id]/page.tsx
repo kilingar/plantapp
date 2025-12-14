@@ -34,7 +34,7 @@ export default function ZoneDetailPage({
 
   const loadZone = async () => {
     const { data, error } = await supabase
-      .from("zones")
+        .from("zones")
       .select(`
         *,
         home:homes(*)
@@ -45,17 +45,18 @@ export default function ZoneDetailPage({
     if (error) {
       console.error("Error loading zone:", error);
     } else if (data) {
-      setZone(data);
-      setHome(data.home as Home);
-      setName(data.name);
-      setDescription(data.description || "");
+      setZone(data as Zone);
+      setHome((data as any).home as Home);
+      const z = data as Partial<Zone>;
+      setName((z.name as string) || "");
+      setDescription((z.description as string) || "");
     }
     setLoading(false);
   };
 
   const loadPlants = async () => {
     const { data, error } = await supabase
-      .from("plants")
+        .from("plants")
       .select("*")
       .eq("zone_id", id)
       .eq("status", "active")
@@ -70,8 +71,8 @@ export default function ZoneDetailPage({
 
   const handleSave = async () => {
     const { error } = await supabase
-      .from("zones")
-      .update({
+        .from("zones")
+        .update({
         name,
         description: description || null,
       })
@@ -99,7 +100,7 @@ export default function ZoneDetailPage({
     }
 
     const { error } = await supabase
-      .from("zones")
+        .from("zones")
       .delete()
       .eq("id", id);
 
@@ -125,8 +126,8 @@ export default function ZoneDetailPage({
 
     if (imageUrl) {
       const { error } = await supabase
-        .from("zones")
-        .update({ image_url: imageUrl })
+          .from("zones")
+          .update({ image_url: imageUrl })
         .eq("id", zone.id);
 
       if (error) {

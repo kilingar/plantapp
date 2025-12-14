@@ -169,12 +169,16 @@ export default function MembersPage() {
     const token = generateInviteToken();
     const inviteUrl = `${window.location.origin}/invite/${token}`;
 
-    const { error } = await supabase.from("invitations").insert([{
-      home_id: selectedHome.id,
-      email: email.toLowerCase(),
-      token,
-      invited_by: user.id,
-    }]);
+    const { error } = await supabase
+      .from("invitations")
+      .insert([
+        {
+          home_id: selectedHome.id,
+          email: email.toLowerCase(),
+          token,
+          invited_by: user.id,
+        }
+      ]);
 
     if (error) {
       setMessage({ type: "error", text: "Error creating invitation: " + error.message });
