@@ -50,8 +50,9 @@ export default function DashboardLayout({
       .select("super_admin")
       .eq("id", userId)
       .single();
-    
-    if (data?.super_admin) {
+
+    // Handle Supabase typed response that can infer to never
+    if ((data as { super_admin?: boolean } | null)?.super_admin) {
       setIsSuperAdmin(true);
     }
   };
