@@ -55,8 +55,10 @@ export default function MembersPage() {
       .eq("user_id", user.id)
       .single();
 
+    // Supabase typed response can sometimes infer to never; safely cast
     if (data) {
-      setUserRole(data.role);
+      const d = data as { role?: "owner" | "member" };
+      if (d.role) setUserRole(d.role);
     }
   };
 
