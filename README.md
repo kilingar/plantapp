@@ -224,3 +224,45 @@ npm run lint     # Run linter
 ---
 
 **Made with 🌿 for plant lovers**
+
+### Vercel Setup
+
+- Create or open your Vercel project and link the GitHub repo `kilingar/plantapp`.
+- In Vercel Project Settings → Environment Variables, add:
+
+```
+NEXT_PUBLIC_SUPABASE_URL=your_supabase_project_url
+NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
+```
+
+- Trigger a deployment (Vercel will auto-detect Next.js and run `next build`).
+
+### Common Deployment Issues
+
+- Missing env vars: Ensure `NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_ANON_KEY` are set in Vercel.
+- Supabase Storage access: Make sure your bucket (`plant-images`) is public or that URLs used are publicly accessible.
+- Node version: Vercel uses a modern Node by default; no custom config required for Next.js 15.
+- Build script: Provided by `package.json` (`next build`). No extra configuration required.
+
+### Optional: Vercel CLI Deployment
+
+If you prefer using the CLI:
+
+```
+npm i -g vercel
+vercel link
+vercel env add NEXT_PUBLIC_SUPABASE_URL
+vercel env add NEXT_PUBLIC_SUPABASE_ANON_KEY
+vercel deploy --prod
+```
+
+### Supabase Configuration Notes
+
+- Storage bucket: `plant-images` hosts all images referenced in `migration-data.sql`.
+- Ensure CORS/public access is enabled for direct image access via the URLs.
+
+### Post-deploy Verification
+
+- Dashboard loads without auth errors.
+- Zones/Plants images render from Supabase Storage URLs.
+- Adding/Deleting plants/zones/diary entries works as expected.

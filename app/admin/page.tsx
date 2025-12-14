@@ -49,7 +49,8 @@ export default function AdminPage() {
       .eq("id", user.id)
       .single();
 
-    if (profile?.super_admin) {
+    // Supabase typed response can be inferred as never; cast safely
+    if ((profile as { super_admin?: boolean } | null)?.super_admin) {
       setIsSuperAdmin(true);
     }
     setLoading(false);
